@@ -13,7 +13,6 @@ public class RoundManager : MonoBehaviour
     public event Action OnRoundBegin;
     public event Action OnTurnSwitch;
 
-    //No need for a maxRounds counter, since the first player who wins 3 times wins the game
     [Header("Game Rules")]
     [SerializeField] private int roundsNeededToWin = 3;
     [SerializeField] private PlayerType firstPlayerToAct = PlayerType.Player;
@@ -49,18 +48,23 @@ public class RoundManager : MonoBehaviour
     public void BeginNewRound()
     {
         currentPlayerTurn = firstPlayerToAct;
+        tokenGrid.currentPlayer = currentPlayerTurn;
         tokenGrid.ClearGrid();
         currentRound++;
         OnRoundBegin?.Invoke();
+        OnTurnSwitch?.Invoke();
     }
 
     public void WinRound(PlayerType winner)
     {
         if (winner == PlayerType.Player)
         {
+            DebugMessenger.DebugMessage("Player has won round " + currentRound + "!");
             roundsWon[1]++;
             if (roundsWon[1] >= roundsNeededToWin)
             {
+                DebugMessenger.DebugMessage("Player has won!");
+                EndScreen.EndGame(true);
                 //TODO: Start win sequence
                 //Will probably be an animation/coroutine with the player script being disabled, the opponent performing an animation, etc.
                 return;
@@ -68,9 +72,12 @@ public class RoundManager : MonoBehaviour
         }
         else
         {
+            DebugMessenger.DebugMessage("AI has won round " + currentRound + "!");
             roundsWon[0]++;
             if (roundsWon[0] >= roundsNeededToWin)
             {
+                DebugMessenger.DebugMessage("AI has won!");
+                EndScreen.EndGame(false);
                 //TODO: Start lose sequence
                 return;
             }

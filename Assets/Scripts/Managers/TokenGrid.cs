@@ -6,13 +6,14 @@ public class TokenGrid : MonoBehaviour
 {
     private int rows = 6;
     private int columns = 7;
-    private int cellSize = 1;
 
-    //Used to set the starting position for the drop animation when a token is spawned on a column
-    [SerializeField] private Transform tokenStartPos;
-    public GameObject[] tokenPrefabs = new GameObject[2]; //0 - player token, 1 - enemy token
+    public GameObject[] tokenPrefabs = new GameObject[2]; //0 - player token, 1 - AI token
+    public Transform[] previewTokens;
     private int[,] grid; //6 rows, 7 columns
     private GameObject[,] tokenObjects;
+
+    private RoundManager roundManager;
+    public RoundManager.PlayerType currentPlayer;
 
     //In the grid there are 3 possible numbers for each index:
     // -1 - cell taken by the AI opponent
@@ -21,6 +22,7 @@ public class TokenGrid : MonoBehaviour
 
     private void Awake()
     {
+        roundManager = FindFirstObjectByType<RoundManager>();
         grid = new int[rows, columns];
         tokenObjects = new GameObject[rows, columns];
     }
@@ -32,20 +34,41 @@ public class TokenGrid : MonoBehaviour
             if (grid[row, column] == 0) //If the cell is empty
             {
                 //index value:
-                // -1 - AI
                 // 1 - Player
+                // -1 - AI
                 grid[row, column] = playerIndex;
-                Vector3 startPos = tokenStartPos.position + new Vector3(column * cellSize, rows * cellSize, 0f);
-                Vector3 endPos = tokenStartPos.position + new Vector3(column * cellSize, row * cellSize, 0f);
-                GameObject token = Instantiate(tokenPrefabs[playerIndex], startPos, Quaternion.identity, transform);
+                Vector3 startPos = previewTokens[column].position;
+                //Get the actual index for the needed prefab, since the index value is different
+                int prefabIndex = playerIndex == 1 ? 0 : 1;
+                GameObject token = Instantiate(tokenPrefabs[prefabIndex], startPos, Quaternion.identity, transform);
                 tokenObjects[row, column] = token;
 
-                StartCoroutine(MoveTokenToCell(token.transform, startPos, endPos));
+                //Since theres a delay before the turns switch,
+                    //the player can spam a column to spawn tokens as quickly as possible
+                //This is prevented using this enum
+                currentPlayer = playerIndex == 1 ? RoundManager.PlayerType.AI : RoundManager.PlayerType.Player;
+                StartCoroutine(WaitAndRegisterToken(playerIndex));
                 DebugMessenger.DebugMessage("Added token to cell: " + row + ", " + column);
                 return;
             }
         }
         DebugMessenger.DebugMessage("Column is full");
+    }
+
+    private IEnumerator WaitAndRegisterToken(int playerIndex, float waitTime = 1)
+    {
+        //Done like this, because the tokens are physics-based and
+            //it takes them a second to fall down to the target cell
+        yield return new WaitForSeconds(waitTime);
+        if (CheckWinCondition(playerIndex))
+        {
+            RoundManager.PlayerType winnerType = playerIndex == 1 ? RoundManager.PlayerType.Player : RoundManager.PlayerType.AI;
+            roundManager.WinRound(winnerType);
+        }
+        else
+        {
+            roundManager.SwitchTurn();
+        }
     }
 
     public bool IsColumnFull(int column)
@@ -58,21 +81,6 @@ public class TokenGrid : MonoBehaviour
             }
         }
         return true;
-    }
-
-    private IEnumerator MoveTokenToCell(Transform token, Vector3 start, Vector3 end)
-    {
-        float elapsedTime = 0f;
-        float duration = Vector3.Distance(start, end);
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            token.position = Vector3.Lerp(start, end, elapsedTime / duration);
-            yield return null;
-        }
-
-        token.position = end;
     }
 
     public bool CheckWinCondition(int playerIndex)

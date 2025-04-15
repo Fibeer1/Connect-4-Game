@@ -21,7 +21,7 @@ public class AIOpponent : MonoBehaviour
     private RoundManager roundManager;
     private TokenGrid tokenGrid;
     public Difficulty difficulty;
-    private int searchDepth = 5; //Used in a recursive method, be careful with high values
+    private int searchDepth = 3; //Used in a recursive method, be careful with high values
 
     //The time it takes for the AI to make a move when it's its turn
     [SerializeField] private float minWaitTime = 0.5f;
@@ -50,6 +50,7 @@ public class AIOpponent : MonoBehaviour
         {
             difficulty = Difficulty.Hard;
         }
+        DebugMessenger.DebugMessage("AI's difficulty has changed to " + difficulty.ToString());
     }
 
     private void OnAITurn()
