@@ -83,36 +83,38 @@ public class TokenGrid : MonoBehaviour
         return true;
     }
 
-    public bool CheckWinCondition(int playerIndex)
+    public bool CheckWinCondition(int playerIndex, int[,] customGrid = null)
     {
+        int[,] gridToCheck = customGrid ?? grid;
         //Horizontal
         for (int r = 0; r < rows; r++)
             for (int c = 0; c <= columns - 4; c++)
-                if (CheckLine(playerIndex, r, c, 0, 1)) return true;
+                if (CheckLine(playerIndex, r, c, 0, 1, gridToCheck)) return true;
 
         //Vertical
         for (int c = 0; c < columns; c++)
             for (int r = 0; r <= rows - 4; r++)
-                if (CheckLine(playerIndex, r, c, 1, 0)) return true;
+                if (CheckLine(playerIndex, r, c, 1, 0, gridToCheck)) return true;
 
         //Diagonal /
         for (int r = 0; r <= rows - 4; r++)
             for (int c = 0; c <= columns - 4; c++)
-                if (CheckLine(playerIndex, r, c, 1, 1)) return true;
+                if (CheckLine(playerIndex, r, c, 1, 1, gridToCheck)) return true;
 
         //Diagonal \
         for (int r = 3; r < rows; r++)
             for (int c = 0; c <= columns - 4; c++)
-                if (CheckLine(playerIndex, r, c, -1, 1)) return true;
+                if (CheckLine(playerIndex, r, c, -1, 1, gridToCheck)) return true;
 
         return false;
     }
 
-    private bool CheckLine(int playerIndex, int row, int col, int deltaRow, int deltaCol)
+    private bool CheckLine(int playerIndex, int row, int col, int deltaRow, int deltaCol, int[,] customGrid = null)
     {
+        int[,] gridToCheck = customGrid ?? grid;
         for (int i = 0; i < 4; i++)
         {
-            if (grid[row + i * deltaRow, col + i * deltaCol] != playerIndex)
+            if (gridToCheck[row + i * deltaRow, col + i * deltaCol] != playerIndex)
             {
                 return false;
             }

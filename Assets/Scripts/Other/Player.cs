@@ -9,19 +9,11 @@ public class Player : MonoBehaviour
 
 
     [Header("Camera Parameters")]
-    [SerializeField] private Camera cam;
+    public Camera cam;
     private Transform camParent;
     private Vector3 initialParentPosition;
     [SerializeField] private float swayAmplitude = 0.05f;
     [SerializeField] private float swaySpeed = 1f;
-    private float xRotation;
-    private float yRotation;
-    [SerializeField, Range(0.1f, 10)] public float lookSpeedX = 2f;
-    [SerializeField, Range(0.1f, 10)] public float lookSpeedY = 2f;
-    [SerializeField, Range(1, 180)] private float upLookLimit = 80f;
-    [SerializeField, Range(1, 180)] private float downLookLimit = 80f;
-    [SerializeField, Range(1, 180)] private float rightLookLimit = 80f;
-    [SerializeField, Range(1, 180)] private float leftLookLimit = 80f;
 
     [Header("Interaction Parameters")]
     public Interactable currentInteractable;
@@ -36,28 +28,12 @@ public class Player : MonoBehaviour
         cam = GetComponentInChildren<Camera>();
         camParent = cam.transform.parent;
         initialParentPosition = camParent.localPosition;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     private void Update()
     {
-        HandleCameraMovements();
         HandleInteraction();
         HandleCameraSway();
-    }
-
-    private void HandleCameraMovements()
-    {
-        if (!canLookAround)
-        {
-            return;
-        }
-        xRotation -= Input.GetAxis("Mouse Y") * lookSpeedY;
-        yRotation += Input.GetAxis("Mouse X") * lookSpeedX;
-        xRotation = Mathf.Clamp(xRotation, -upLookLimit, downLookLimit);
-        yRotation = Mathf.Clamp(yRotation, -leftLookLimit, rightLookLimit);
-        cam.transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
     }
 
     private void HandleCameraSway()
@@ -81,7 +57,8 @@ public class Player : MonoBehaviour
         }
 
         //Hover mechanics
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, interactionDistance, interactableLayerMask))
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance, interactableLayerMask))
         {
             Interactable interactable = hit.transform.GetComponent<Interactable>();
             if (interactable != null)

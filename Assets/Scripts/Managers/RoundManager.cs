@@ -21,13 +21,16 @@ public class RoundManager : MonoBehaviour
     public PlayerType currentPlayerTurn;
     public int[] roundsWon = new int[2]; //0 - rounds won by the AI, 1 - rounds won by the player
     public int currentRound = 0;
+    public bool isGameOver = false;
 
     private TokenGrid tokenGrid;
+    private Revolver revolver;
 
     private void Awake()
     {
         //Get references before any game logic
         tokenGrid = FindFirstObjectByType<TokenGrid>();
+        revolver = FindFirstObjectByType<Revolver>();
     }
 
     private void Start()
@@ -51,36 +54,27 @@ public class RoundManager : MonoBehaviour
         tokenGrid.currentPlayer = currentPlayerTurn;
         tokenGrid.ClearGrid();
         currentRound++;
+        revolver.bulletCount = revolver.defaultBulletCount;
         OnRoundBegin?.Invoke();
         OnTurnSwitch?.Invoke();
     }
 
     public void WinRound(PlayerType winner)
     {
-        if (winner == PlayerType.Player)
+        int playerIndex = winner == PlayerType.Player ? 1 : 0;
+        bool hasPlayerWon = playerIndex == 1;
+        string playerName = playerIndex == 1 ? "Player" : "AI";
+
+        DebugMessenger.DebugMessage($"{playerName} has won round " + currentRound + "!");
+        roundsWon[playerIndex]++;
+        if (roundsWon[playerIndex] >= roundsNeededToWin)
         {
-            DebugMessenger.DebugMessage("Player has won round " + currentRound + "!");
-            roundsWon[1]++;
-            if (roundsWon[1] >= roundsNeededToWin)
-            {
-                DebugMessenger.DebugMessage("Player has won!");
-                EndScreen.EndGame(true);
-                //TODO: Start win sequence
-                //Will probably be an animation/coroutine with the player script being disabled, the opponent performing an animation, etc.
-                return;
-            }
-        }
-        else
-        {
-            DebugMessenger.DebugMessage("AI has won round " + currentRound + "!");
-            roundsWon[0]++;
-            if (roundsWon[0] >= roundsNeededToWin)
-            {
-                DebugMessenger.DebugMessage("AI has won!");
-                EndScreen.EndGame(false);
-                //TODO: Start lose sequence
-                return;
-            }
+            isGameOver = true;
+            DebugMessenger.DebugMessage($"{playerName} has won!");
+            EndScreen.EndGame(hasPlayerWon);
+            //TODO: Start win/lose sequence
+            //Will probably be an animation/coroutine with the player script being disabled, the opponent performing an animation, etc.
+            return;
         }
         BeginNewRound();
     }

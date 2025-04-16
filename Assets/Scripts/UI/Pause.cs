@@ -40,7 +40,6 @@ public class Pause : MonoBehaviour
         player.enabled = true;
         pauseMenu.SetActive(false);
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
         AudioListener.pause = false;
         paused = false;
     }
@@ -50,7 +49,6 @@ public class Pause : MonoBehaviour
         player.enabled = false;
         pauseMenu.SetActive(true);
         Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
         AudioListener.pause = true;
         paused = true;
     }    
@@ -67,7 +65,6 @@ public class Pause : MonoBehaviour
     public void ReturnToMenu()
     {
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.None;
         AudioListener.pause = false;
         SceneManager.LoadScene(0);
     }
@@ -75,7 +72,6 @@ public class Pause : MonoBehaviour
     public void ExitGame()
     {
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.None;
         AudioListener.pause = false;
         Application.Quit();
     }

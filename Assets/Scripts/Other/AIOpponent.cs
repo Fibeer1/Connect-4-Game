@@ -6,22 +6,20 @@ public class AIOpponent : MonoBehaviour
 {
     public enum Difficulty
     {
-        Easy,
-        Medium,
-        Hard
+        Easy, //Random moves, but if it gets the opportunity to win, it will
+        Hard //Same as Easy, but it can also put tokens on the grid to block the player if he's about to win
     }
 
     //Difficulty will change as the game goes on
     //Rounds 1, 2 - Easy
-    //Rounds 3, 4 - Medium
-    //Round 5 - Hard
+    //Round 3, 4, 5 - Hard
 
-    //So the more the player loses, the harder the game will become
+    //So the longer the game goes, the harder it will become,
+    //there will still be at least 1 round in which the AI's difficuly is Hard
 
     private RoundManager roundManager;
     private TokenGrid tokenGrid;
-    public Difficulty difficulty;
-    private int searchDepth = 3; //Used in a recursive method, be careful with high values
+    private Difficulty difficulty;
 
     //The time it takes for the AI to make a move when it's its turn
     [SerializeField] private float minWaitTime = 0.5f;
@@ -38,26 +36,16 @@ public class AIOpponent : MonoBehaviour
 
     private void OnNewRound()
     {
-        if (roundManager.currentRound <= 2)
-        {
-            difficulty = Difficulty.Easy;
-        }
-        else if (roundManager.currentRound <= 4)
-        {
-            difficulty = Difficulty.Medium;
-        }
-        else
-        {
-            difficulty = Difficulty.Hard;
-        }
+        //For the first 2 rounds, the difficulty will be Easy, after that, it will be set to Hard
+        difficulty = roundManager.currentRound <= 2 ? Difficulty.Easy : Difficulty.Hard;
         DebugMessenger.DebugMessage("AI's difficulty has changed to " + difficulty.ToString());
     }
 
     private void OnAITurn()
     {
-        if (roundManager.currentPlayerTurn != RoundManager.PlayerType.AI)
+        if (roundManager.currentPlayerTurn != RoundManager.PlayerType.AI || roundManager.isGameOver)
         {
-            //Just in case
+            //If it's not the AI's turn or the game is over, don't act
             return;
         }
         StartCoroutine(WaitAndAct());
@@ -79,156 +67,84 @@ public class AIOpponent : MonoBehaviour
         switch (difficulty)
         {
             case Difficulty.Easy:
-                return GetRandomMove(simulatedGrid);
-
-            case Difficulty.Medium:
-                return GetMediumMove(simulatedGrid);
+                return GetEasyMove(simulatedGrid);
 
             case Difficulty.Hard:
-                return GetBestMove(simulatedGrid, searchDepth);
+                return GetHardMove(simulatedGrid);
 
             default:
                 return GetRandomMove(simulatedGrid);
         }
     }
 
+    private int GetEasyMove(int[,] grid)
+    {
+        //Make a copy of the board and simulate the AI's next move
+        //If it would win the round, the AI makes that move
+        int winningColumn = SpecialMove(grid, -1);
+
+        if (winningColumn != -1)
+        {
+            return winningColumn;
+        }
+
+        //If there are no such cases (such as when the game has just started),
+        //add a token at random
+        return GetRandomMove(grid);
+    }
+
     private int GetRandomMove(int[,] grid)
     {
+        DebugMessenger.DebugMessage("Random Move");
         List<int> validMoves = tokenGrid.GetValidColumns(grid);
         return validMoves[Random.Range(0, validMoves.Count)];
     }
 
-    private int GetMediumMove(int[,] grid)
+    private int GetHardMove(int[,] grid)
     {
-        //Make a copy of the board and simulate the AI's next move
-        //If it would win the round, the AI makes that move
-        foreach (int col in tokenGrid.GetValidColumns(grid))
+        //Same this as Easy Move, but this also checks if the player would win
+
+        int winningColumn = SpecialMove(grid, -1);
+
+        if (winningColumn != -1)
         {
-            int[,] temp = (int[,])grid.Clone();
-            tokenGrid.AddSimulatedTokenToColumn(temp, col, -1);
-            if (tokenGrid.CheckWinCondition(-1)) return col;
+            return winningColumn;
         }
 
-        //If the player would win the game,
-        //Add a token to the spot where it would be blocked
-        foreach (int col in tokenGrid.GetValidColumns(grid))
+        int blockingColumn = SpecialMove(grid, 1);
+
+        if (blockingColumn != -1)
         {
-            int[,] temp = (int[,])grid.Clone();
-            tokenGrid.AddSimulatedTokenToColumn(temp, col, 1);
-            if (tokenGrid.CheckWinCondition(1)) return col;
+            return blockingColumn;
         }
 
         //If there are no such cases (such as when the game has just started),
-            //add a token at random
+        //add a token at random
+        DebugMessenger.DebugMessage("Hard move impossible");
         return GetRandomMove(grid);
     }
 
-    private int GetBestMove(int[,] board, int depth)
+    private int SpecialMove(int[,] grid, int playerIndex)
     {
-        //Get the best move in the current situation,
-            //taking into account multiple future moves
-        //This method uses the Minimax algorithm,
-            //which simulates the aforementioned future moves and picks the best one
-        //Depth in this case means the number of future moves the AI will look into
-            //alternating between itself and the player
+        //playerIndex:
+            // -1 - AI
+            // 1 - Player
 
-        int bestScore = int.MinValue;
-        int bestCol = -1;
-        
-        foreach (int col in tokenGrid.GetValidColumns(board))
+        //Make a copy of the board and simulate the AI's next move
+        //If the AI would win the round and is checking for that, the AI makes that move
+        //If it's checking if the player would win, it will block the player's winning move
+        foreach (int col in tokenGrid.GetValidColumns(grid))
         {
-            int[,] temp = (int[,])board.Clone();
-            tokenGrid.AddSimulatedTokenToColumn(temp, col, -1);
-
-            int score = Minimax(temp, depth - 1, false, int.MinValue, int.MaxValue);
-            if (score > bestScore)
+            int[,] temp = (int[,])grid.Clone();
+            tokenGrid.AddSimulatedTokenToColumn(temp, col, playerIndex);
+            if (tokenGrid.CheckWinCondition(playerIndex, temp))
             {
-                bestScore = score;
-                bestCol = col;
+                string debugText = playerIndex == -1 ? "Winning Move" : "Blocking Move";
+                DebugMessenger.DebugMessage(debugText);
+                return col;
             }
         }
-
-        //If the AI has found a valid move at all, use that
-        //If not, get a random move
-        return bestCol != -1 ? bestCol : GetRandomMove(board);
-    }
-
-    private int Minimax(int[,] board, int depth, bool isMax, int alpha, int beta)
-    {
-        //isMax is true if the AI is looking into its own future moves
-            //and false if it's looking into the player's future moves
-            //Used to maximize its own and minimize the player's score
-        //alpha and beta values are used to prevent the AI from evaluating
-            //worse outcomes than ones which have already been found
-            //used for optimization
-
-        if (tokenGrid.CheckWinCondition(-1))
-        {
-            //If the AI has found a winning move for itself, return a high positive score
-            return 1000 + depth;
-        }
-        if (tokenGrid.CheckWinCondition(1))
-        {
-            //If the AI has found a winning move for the player, return a high negative score
-            return -1000 - depth;
-        }
-        if (depth == 0 || tokenGrid.GetValidColumns(board).Count == 0)
-        {
-            return EvaluateBoard(board);
-        }
-
-        int best = isMax ? int.MinValue : int.MaxValue;
-
-        foreach (int col in tokenGrid.GetValidColumns(board))
-        {
-            int[,] temp = (int[,])board.Clone();
-            tokenGrid.AddSimulatedTokenToColumn(temp, col, isMax ? -1 : 1);
-            int score = Minimax(temp, depth - 1, !isMax, alpha, beta);
-
-            if (isMax)
-            {
-                best = Mathf.Max(best, score);
-                alpha = Mathf.Max(alpha, best);
-            }
-            else
-            {
-                best = Mathf.Min(best, score);
-                beta = Mathf.Min(beta, best);
-            }
-
-            if (beta <= alpha) break;
-        }
-
-        return best;
-    }
-
-    private int EvaluateBoard(int[,] board)
-    {
-        return ScorePosition(board, -1) - ScorePosition(board, 1);
-    }
-
-    private int ScorePosition(int[,] board, int player)
-    {
-        int score = 0;
-
-        for (int r = 0; r < board.GetLength(0); r++)
-            for (int c = 0; c < board.GetLength(1); c++)
-                score += CountNearbyTokens(board, r, c, player);
-
-        return score;
-    }
-
-    private int CountNearbyTokens(int[,] board, int r, int c, int player)
-    {
-        int score = 0;
-        if (board[r, c] != player) return 0;
-
-        // Simplified scoring logic
-        if (r + 1 < board.GetLength(0) && board[r + 1, c] == player) score++;
-        if (c + 1 < board.GetLength(1) && board[r, c + 1] == player) score++;
-        if (r + 1 < board.GetLength(0) && c + 1 < board.GetLength(1) && board[r + 1, c + 1] == player) score++;
-        if (r - 1 >= 0 && c + 1 < board.GetLength(1) && board[r - 1, c + 1] == player) score++;
-
-        return score;
+        //If no such move has been found, return an invalid number
+        return -1;
     }
 }
