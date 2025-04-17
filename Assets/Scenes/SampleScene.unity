@@ -7866,7 +7866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc362d19d1252924691a74d997d0f126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldPlayAtStart: 0
+  shouldPlayAtStart: 1
   blackScreen: {fileID: 1213228451}
 --- !u!114 &948838468
 MonoBehaviour:

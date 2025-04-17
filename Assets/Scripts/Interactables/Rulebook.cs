@@ -117,7 +117,7 @@ public class Rulebook : Interactable
         {
             //Activate the text object after the animation happens,
                 //if the player is holding the book
-            Pause.ToggleInteractionControls(true, "RMB - Close Book");
+            Pause.ToggleInteractionControls(true, "RMB - Close book");
         }
         pickedUp = shouldPickUp;       
     }
