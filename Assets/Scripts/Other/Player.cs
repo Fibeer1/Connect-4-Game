@@ -20,9 +20,6 @@ public class Player : MonoBehaviour
     [SerializeField] private float interactionDistance = 1.5f;
     public LayerMask interactableLayerMask;
 
-    [Header("Other Parameters")]
-    public int placeholder; //Delete if I need to serialize any parameters that could be classified as "other"
-
     void Awake()
     {
         cam = GetComponentInChildren<Camera>();

@@ -8,16 +8,22 @@ using TMPro;
 public class Pause : MonoBehaviour
 {
     public bool paused = false;
+    public static Pause instance;
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject tutorialScreen;
+    [SerializeField] private TextMeshProUGUI interactionControls;
     [SerializeField] private Player player;
 
     private void Awake()
     {
+        instance = this;
         if (player == null)
         {
             player = FindAnyObjectByType<Player>();
         }
         pauseMenu.SetActive(false);
+        tutorialScreen.SetActive(false);
+        interactionControls.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -33,6 +39,17 @@ public class Pause : MonoBehaviour
                 PauseGame();
             }
         }
+    }
+
+    private void OnInteractionControls(bool shouldActivate, string controlText = "")
+    {
+        interactionControls.text = controlText;
+        interactionControls.gameObject.SetActive(shouldActivate);
+    }
+
+    public static void ToggleInteractionControls(bool shouldActivate, string controlsText = "")
+    {
+        instance.OnInteractionControls(shouldActivate, controlsText);
     }
 
     public void Resume()

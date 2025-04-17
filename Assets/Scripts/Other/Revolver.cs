@@ -5,6 +5,7 @@ using UnityEngine;
 public class Revolver : MonoBehaviour
 {
     [SerializeField] private GameObject shootVFX;
+    [SerializeField] private GameObject metalVFX;
     [SerializeField] private Transform shootPos;
     [SerializeField] private Vector3 heldOffset;
     [SerializeField] private Quaternion heldRotation;
@@ -14,6 +15,13 @@ public class Revolver : MonoBehaviour
 
     private Animator animator;
     private Player player;
+    private AudioSource audioSource;
+
+    [SerializeField] private AudioClip shootClip;
+    [SerializeField] private AudioClip clickClip;
+    [SerializeField] private AudioClip putDownClip;
+
+    private RaycastHit hit;
 
     public int bulletCount = 6;
     public int defaultBulletCount = 6;
@@ -28,6 +36,7 @@ public class Revolver : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         player = FindFirstObjectByType<Player>();
         
     }
@@ -53,7 +62,7 @@ public class Revolver : MonoBehaviour
 
         Ray ray = player.cam.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 100))
+        if (Physics.Raycast(ray, out hit, 100))
         {
             Vector3 targetDir = hit.point - transform.position;
             Quaternion targetRotation = Quaternion.LookRotation(targetDir);
@@ -62,9 +71,8 @@ public class Revolver : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             //Using crossfade here so that the animation can be played multiple times
-            animator.CrossFadeInFixedTime(shootAnim, 0.15f);
             string targetAnim = bulletCount > 0 ? shootAnim : emptyAnim;
-            animator.CrossFadeInFixedTime(targetAnim, 0.15f);
+            animator.Play(targetAnim, 0, 0);
         }
     }
 
@@ -76,14 +84,28 @@ public class Revolver : MonoBehaviour
     public void PutDown()
     {
         isPickedUp = false;
+        audioSource.PlayOneShot(putDownClip);
         StartCoroutine(MoveAnimation(putDownPosition, putDownRotation, false));
+    }
+
+    public void ClickSound()
+    {
+        audioSource.PlayOneShot(clickClip);
     }
 
     public void Shoot()
     {
+        
         bulletCount--;
         CameraShake.Shake(0.4f, 0.015f);
         Instantiate(shootVFX, shootPos.position, shootPos.rotation);
+        ClickSound();
+        audioSource.PlayOneShot(shootClip);
+        if (hit.collider != null && hit.transform.tag == "Metal")
+        {
+            //Wall/vent has been hit
+            Instantiate(metalVFX, hit.point, Quaternion.LookRotation(hit.normal));
+        }
     }
 
     private IEnumerator MoveAnimation(Vector3 targetPosition, Quaternion targetRotation, bool pickedUp)
@@ -97,12 +119,15 @@ public class Revolver : MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, elapsedTime / duration);
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f &&
                 Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
-            {
+            {                           
                 break;
             }
             yield return null;
             elapsedTime += Time.deltaTime;
         }
+
+        transform.position = targetPosition;
+        transform.rotation = targetRotation;
 
         string animToPlay = pickedUp ? idleAnim : stationaryAnim;
         isPickedUp = pickedUp;

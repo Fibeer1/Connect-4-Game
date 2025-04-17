@@ -12,9 +12,12 @@ public class Connect4Token : MonoBehaviour
     [SerializeField] private float snapOffset = 0.05f;
     public bool hasLanded = false;
 
+    private AudioSource audioSource;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void FixedUpdate()
@@ -29,12 +32,18 @@ public class Connect4Token : MonoBehaviour
         {
             if (token.gameObject != gameObject) //Ignore self
             {
-                rb.linearVelocity = Vector3.zero;
-                rb.isKinematic = true;
-                hasLanded = true;
+                OnLand();
                 break;
             }
         }        
+    }
+
+    private void OnLand()
+    {
+        audioSource.Play();
+        rb.linearVelocity = Vector3.zero;
+        rb.isKinematic = true;
+        hasLanded = true;
     }
 
     private void OnDrawGizmosSelected()

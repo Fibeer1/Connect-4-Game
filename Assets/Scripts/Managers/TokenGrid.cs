@@ -62,13 +62,48 @@ public class TokenGrid : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         if (CheckWinCondition(playerIndex))
         {
+            yield return new WaitForSeconds(waitTime);
             RoundManager.PlayerType winnerType = playerIndex == 1 ? RoundManager.PlayerType.Player : RoundManager.PlayerType.AI;
-            roundManager.WinRound(winnerType);
+            roundManager.CompleteRound(winnerType);
+        }
+        else if (IsGridFull())
+        {
+            roundManager.CompleteRound(RoundManager.PlayerType.None);           
         }
         else
         {
             roundManager.SwitchTurn();
         }
+    }
+
+    public void HighlightWinningCells(GameObject[] cells)
+    {
+        MaterialPropertyBlock highlightMPB = new MaterialPropertyBlock();
+        highlightMPB.SetColor("_BaseColor", Color.white);
+        highlightMPB.SetColor("_EmissionColor", Color.white);
+
+        foreach (GameObject cell in cells)
+        {
+            if (cell == null)
+            {
+                DebugMessenger.DebugMessage("ERROR: Winning cell is null.");
+                continue;
+            }
+            MeshRenderer cellRenderer = cell.GetComponent<MeshRenderer>();
+            cellRenderer.SetPropertyBlock(highlightMPB);
+        }
+    }
+
+    public bool IsGridFull()
+    {
+        for (int column = 0; column < columns; column++)
+        {
+            if (!IsColumnFull(column))
+            {
+                return false;
+            }
+        }        
+        return true;
     }
 
     public bool IsColumnFull(int column)
@@ -87,30 +122,63 @@ public class TokenGrid : MonoBehaviour
     {
         int[,] gridToCheck = customGrid ?? grid;
         //Horizontal
-        for (int r = 0; r < rows; r++)
-            for (int c = 0; c <= columns - 4; c++)
-                if (CheckLine(playerIndex, r, c, 0, 1, gridToCheck)) return true;
+        for (int row = 0; row < rows; row++)
+        {
+            for (int column = 0; column <= columns - 4; column++)
+            {
+                if (CheckLine(playerIndex, row, column, 0, 1, gridToCheck))
+                {
+                    return true;
+                }
+            }
+        }
 
         //Vertical
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r <= rows - 4; r++)
-                if (CheckLine(playerIndex, r, c, 1, 0, gridToCheck)) return true;
+        for (int column = 0; column < columns; column++)
+        {
+            for (int row = 0; row <= rows - 4; row++)
+            {
+                if (CheckLine(playerIndex, row, column, 1, 0, gridToCheck))
+                {
+                    return true;
+                }
+            }
+        }
 
         //Diagonal /
-        for (int r = 0; r <= rows - 4; r++)
-            for (int c = 0; c <= columns - 4; c++)
-                if (CheckLine(playerIndex, r, c, 1, 1, gridToCheck)) return true;
+        for (int row = 0; row <= rows - 4; row++)
+        {
+            for (int column = 0; column <= columns - 4; column++)
+            {
+                if (CheckLine(playerIndex, row, column, 1, 1, gridToCheck))
+                {
+                    return true;
+                }
+            }
+        }
 
         //Diagonal \
-        for (int r = 3; r < rows; r++)
-            for (int c = 0; c <= columns - 4; c++)
-                if (CheckLine(playerIndex, r, c, -1, 1, gridToCheck)) return true;
+        for (int row = 3; row < rows; row++)
+        {
+            for (int column = 0; column <= columns - 4; column++)
+            {
+                if (CheckLine(playerIndex, row, column, -1, 1, gridToCheck))
+                {
+                    return true;
+                }
+            }
+        }
 
         return false;
     }
 
     private bool CheckLine(int playerIndex, int row, int col, int deltaRow, int deltaCol, int[,] customGrid = null)
     {
+        //Check 4 cells next to each other,
+        //if all of them have the same player index assigned to them,
+        //the entered player wins
+        //deltaRow and deltaCol are used to get the neighbouring cells starting from row and col
+        GameObject[] winningCells = new GameObject[4];
         int[,] gridToCheck = customGrid ?? grid;
         for (int i = 0; i < 4; i++)
         {
@@ -118,21 +186,27 @@ public class TokenGrid : MonoBehaviour
             {
                 return false;
             }
+            if (customGrid == grid)
+            {
+                //Only highlight cells in the real grid
+                winningCells[i] = tokenObjects[row + i * deltaRow, col + i * deltaCol];
+            }           
         }
+        HighlightWinningCells(winningCells);
         return true;
     }
 
     public void ClearGrid()
     {
-        for (int r = 0; r < rows; r++)
+        for (int row = 0; row < rows; row++)
         {
-            for (int c = 0; c < columns; c++)
+            for (int column = 0; column < columns; column++)
             {
-                grid[r, c] = 0;
-                if (tokenObjects[r, c] != null)
+                grid[row, column] = 0;
+                if (tokenObjects[row, column] != null)
                 {
-                    Destroy(tokenObjects[r, c]);
-                    tokenObjects[r, c] = null;
+                    Destroy(tokenObjects[row, column]);
+                    tokenObjects[row, column] = null;
                 }
             }
         }

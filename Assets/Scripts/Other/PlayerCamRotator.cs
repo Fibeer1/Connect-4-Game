@@ -17,13 +17,18 @@ public class PlayerCamRotator : MonoBehaviour
     // 2 - Facing right vent
 
     private Rotation currentRotation;
-    private Coroutine currentRotationSequence;
+    public Coroutine currentRotationSequence;
     private Player player;
     [SerializeField] private Revolver revolver;
+
+    private AudioSource audioSource;
+
+    [SerializeField] private AudioClip[] shuffleClips;
 
     private void Awake()
     {
         player = GetComponent<Player>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -36,7 +41,8 @@ public class PlayerCamRotator : MonoBehaviour
         // 0 - Left
         // 1 - Right
 
-        if ((directionIndex == 0 && currentRotation == Rotation.Left) ||
+        if (!player.canInteract || 
+            (directionIndex == 0 && currentRotation == Rotation.Left) ||
             (directionIndex == 1 && currentRotation == Rotation.Right) ||
             currentRotationSequence != null)
         {
@@ -46,7 +52,11 @@ public class PlayerCamRotator : MonoBehaviour
         targetRotation = directionIndex == 0 ? 
             (currentRotation == Rotation.Right ? Rotation.Center : Rotation.Left) : //Left
             (currentRotation == Rotation.Left ? Rotation.Center : Rotation.Right); //Right
+
+        int clipRNG = Random.Range(0, shuffleClips.Length);
+        audioSource.PlayOneShot(shuffleClips[clipRNG]);
         currentRotationSequence = StartCoroutine(ChangeRotation(targetRotation));
+
 
         if (targetRotation == Rotation.Center)
         {

@@ -6,7 +6,8 @@ public class RoundManager : MonoBehaviour
     public enum PlayerType
     {
         AI,
-        Player
+        Player,
+        None
     }
 
     //Using event here cause only this script should invoke these events
@@ -59,11 +60,20 @@ public class RoundManager : MonoBehaviour
         OnTurnSwitch?.Invoke();
     }
 
-    public void WinRound(PlayerType winner)
+    public void CompleteRound(PlayerType winner)
     {
-        int playerIndex = winner == PlayerType.Player ? 1 : 0;
+        int playerIndex = winner == PlayerType.Player ? 1 : winner == PlayerType.AI ? 0 : -1;
+        if (playerIndex == -1)
+        {
+            DebugMessenger.DebugMessage("Draw. Nobody wins.");
+            BeginNewRound();
+            return;
+        }
         bool hasPlayerWon = playerIndex == 1;
         string playerName = playerIndex == 1 ? "Player" : "AI";
+
+        //Make sure the loser acts first next round
+        firstPlayerToAct = winner == PlayerType.Player ? PlayerType.AI : PlayerType.Player;
 
         DebugMessenger.DebugMessage($"{playerName} has won round " + currentRound + "!");
         roundsWon[playerIndex]++;

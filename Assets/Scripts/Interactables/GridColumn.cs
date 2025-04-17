@@ -25,9 +25,13 @@ public class GridColumn : Interactable
             //Update the preview depending on whether the player can put tokens
             if (roundManager.currentPlayerTurn == 
                 RoundManager.PlayerType.Player && 
-                !isPreviewActive())
+                !IsPreviewActive())
             {
                 TogglePreview(true);
+            }
+            else
+            {
+                TogglePreview(false);
             }
         }
     }
@@ -37,8 +41,10 @@ public class GridColumn : Interactable
         base.OnHoverEnter();
         //Do not activate the preview if it's not the player's turn or if the column is full
         if (tokenGrid.currentPlayer != RoundManager.PlayerType.Player || 
+            roundManager.currentPlayerTurn != RoundManager.PlayerType.Player ||
             tokenGrid.IsColumnFull(columnIndex))
         {
+            TogglePreview(false);
             return;
         }
         TogglePreview(true);
@@ -57,7 +63,7 @@ public class GridColumn : Interactable
         tokenGrid.previewTokens[columnIndex].gameObject.SetActive(shouldActivate);
     }
 
-    private bool isPreviewActive()
+    private bool IsPreviewActive()
     {
         return tokenGrid.previewTokens[columnIndex].gameObject.activeSelf;
     }
@@ -65,7 +71,7 @@ public class GridColumn : Interactable
     public override void Interact()
     {
         base.Interact();
-        if (!isPreviewActive())
+        if (!IsPreviewActive())
         {
             //If the preview is not being shown, then the player cannot put a token in this column
             return;
