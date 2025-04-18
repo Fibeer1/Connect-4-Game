@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class Fader : MonoBehaviour
 {
     [SerializeField] private bool shouldPlayAtStart = false;
-    public static Fader Instance;
+    public static Fader instance;
     [SerializeField] private Image blackScreen;
     private Color opaqueColor = new Color(0, 0, 0, 1);
     private Color transparentColor = new Color(0, 0, 0, 0);
 
     private void Awake()
     {
-        Instance = this;
+        instance = this;
         if (shouldPlayAtStart)
         {
             StartCoroutine(OnFade(false, 0.5f, 0.5f));
@@ -43,6 +43,6 @@ public class Fader : MonoBehaviour
 
     public static void Fade(bool fadeIn, float duration, float delay)
     {
-        Instance.StartCoroutine(Instance.OnFade(fadeIn, duration, delay));
+        instance.StartCoroutine(instance.OnFade(fadeIn, duration, delay));
     }    
 }

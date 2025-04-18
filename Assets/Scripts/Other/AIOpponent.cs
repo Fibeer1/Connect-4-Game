@@ -21,6 +21,8 @@ public class AIOpponent : MonoBehaviour
     private TokenGrid tokenGrid;
     private Difficulty difficulty;
 
+    private bool hasSaidDifficultyLine = false;
+
     //The time it takes for the AI to make a move when it's its turn
     [SerializeField] private float minWaitTime = 0.5f;
     [SerializeField] private float maxWaitTime = 1.5f;
@@ -38,6 +40,11 @@ public class AIOpponent : MonoBehaviour
     {
         //For the first 2 rounds, the difficulty will be Easy, after that, it will be set to Hard
         difficulty = roundManager.currentRound <= 2 ? Difficulty.Easy : Difficulty.Hard;
+        if (difficulty == Difficulty.Hard && !hasSaidDifficultyLine)
+        {
+            hasSaidDifficultyLine = true;
+            AIVoiceLines.SayLine(AIVoiceLines.difficultySwitch, 3);
+        }
         DebugMessenger.DebugMessage("AI's difficulty has changed to " + difficulty.ToString());
     }
 
@@ -141,6 +148,15 @@ public class AIOpponent : MonoBehaviour
             {
                 string debugText = playerIndex == -1 ? "Winning Move" : "Blocking Move";
                 DebugMessenger.DebugMessage(debugText);
+                if (playerIndex == 1)
+                {
+                    int voiceLineChance = Random.Range(0, 3);
+                    //30% chance to laugh when blocking the player
+                    if (voiceLineChance == 0)
+                    {
+                        AIVoiceLines.SayLine(AIVoiceLines.blockPlayer, 1);
+                    }
+                }
                 return col;
             }
         }

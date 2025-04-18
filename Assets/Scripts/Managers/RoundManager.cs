@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class RoundManager : MonoBehaviour
@@ -19,19 +20,26 @@ public class RoundManager : MonoBehaviour
     [SerializeField] private PlayerType firstPlayerToAct = PlayerType.Player;
 
     [Header("Game Parameters")]
+    [SerializeField] private TextMeshPro[] playerScores = new TextMeshPro[2]; //0 - AI, 1 - Player
     public PlayerType currentPlayerTurn;
     public int[] roundsWon = new int[2]; //0 - rounds won by the AI, 1 - rounds won by the player
     public int currentRound = 0;
     public bool isGameOver = false;
 
+    public bool hasGameStarted = false;
+
+    [SerializeField] private AudioSource winCounterAS;
+
     private TokenGrid tokenGrid;
     private Revolver revolver;
+    private VentMonster ventMonster;
 
     private void Awake()
     {
         //Get references before any game logic
         tokenGrid = FindFirstObjectByType<TokenGrid>();
         revolver = FindFirstObjectByType<Revolver>();
+        ventMonster = FindFirstObjectByType<VentMonster>();
     }
 
     private void Start()
@@ -58,6 +66,17 @@ public class RoundManager : MonoBehaviour
         revolver.bulletCount = revolver.defaultBulletCount;
         OnRoundBegin?.Invoke();
         OnTurnSwitch?.Invoke();
+        if ((ventMonster.currentAction == VentMonster.Action.Wait ||
+            ventMonster.currentAction == VentMonster.Action.Spawn) &&
+            revolver.bulletCount < revolver.defaultBulletCount / 2)
+        {
+            //If the monster is not active AND the player is low on ammo,
+                //reset it at the start of the round so it doesn't instantly attack the player
+            //If it's waiting on round end this will also make the player anxious
+                //cause he will have heard the growl and will expect it to attack
+            ventMonster.PrepareToSpawn();
+        }
+        
     }
 
     public void CompleteRound(PlayerType winner)
@@ -65,26 +84,34 @@ public class RoundManager : MonoBehaviour
         int playerIndex = winner == PlayerType.Player ? 1 : winner == PlayerType.AI ? 0 : -1;
         if (playerIndex == -1)
         {
-            DebugMessenger.DebugMessage("Draw. Nobody wins.");
+            AIVoiceLines.SayLine(AIVoiceLines.gameTie, 3);
             BeginNewRound();
             return;
         }
         bool hasPlayerWon = playerIndex == 1;
         string playerName = playerIndex == 1 ? "Player" : "AI";
-
+        string roundWinLine = playerIndex == 1 ? AIVoiceLines.roundWonPlayer : AIVoiceLines.roundWonAI;
+        string gameWinLine = playerIndex == 1 ? AIVoiceLines.gameWonPlayer : AIVoiceLines.gameWonAI;
+        playerScores[playerIndex].text += "|";
+        winCounterAS.Play();
         //Make sure the loser acts first next round
-        firstPlayerToAct = winner == PlayerType.Player ? PlayerType.AI : PlayerType.Player;
-
-        DebugMessenger.DebugMessage($"{playerName} has won round " + currentRound + "!");
+        firstPlayerToAct = winner == PlayerType.Player ? PlayerType.AI : PlayerType.Player;      
+        
         roundsWon[playerIndex]++;
         if (roundsWon[playerIndex] >= roundsNeededToWin)
         {
             isGameOver = true;
-            DebugMessenger.DebugMessage($"{playerName} has won!");
+            AIVoiceLines.SayLine(gameWinLine, 3);
             EndScreen.EndGame(hasPlayerWon);
             //TODO: Start win/lose sequence
             //Will probably be an animation/coroutine with the player script being disabled, the opponent performing an animation, etc.
             return;
+        }
+
+        if (currentRound != 2)
+        {
+            //Say the line only when NOT switching difficulty
+            AIVoiceLines.SayLine(roundWinLine, 3);
         }
         BeginNewRound();
     }

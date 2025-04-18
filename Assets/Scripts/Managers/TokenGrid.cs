@@ -36,6 +36,11 @@ public class TokenGrid : MonoBehaviour
                 //index value:
                 // 1 - Player
                 // -1 - AI
+                if (playerIndex == 1 && !roundManager.hasGameStarted)
+                {
+                    //First token the player puts in triggers this boolean
+                    roundManager.hasGameStarted = true;
+                }
                 grid[row, column] = playerIndex;
                 Vector3 startPos = previewTokens[column].position;
                 //Get the actual index for the needed prefab, since the index value is different

@@ -13,6 +13,8 @@ public class Revolver : MonoBehaviour
     private Vector3 putDownPosition;
     private Quaternion putDownRotation;
 
+    private Coroutine moveCoroutine;
+
     private Animator animator;
     private Player player;
     private AudioSource audioSource;
@@ -78,14 +80,23 @@ public class Revolver : MonoBehaviour
 
     public void PickUp()
     {
-        StartCoroutine(MoveAnimation(player.transform.position + player.transform.rotation * heldOffset, heldRotation * player.transform.rotation, true));
+        if (moveCoroutine != null)
+        {
+            StopCoroutine(moveCoroutine);
+        }
+        moveCoroutine = StartCoroutine(MoveAnimation(player.transform.position + 
+            player.transform.rotation * heldOffset, heldRotation * player.transform.rotation, true));
     }
 
     public void PutDown()
     {
         isPickedUp = false;
         audioSource.PlayOneShot(putDownClip);
-        StartCoroutine(MoveAnimation(putDownPosition, putDownRotation, false));
+        if (moveCoroutine != null)
+        {
+            StopCoroutine(moveCoroutine);
+        }
+        moveCoroutine = StartCoroutine(MoveAnimation(putDownPosition, putDownRotation, false));
     }
 
     public void ClickSound()
@@ -95,16 +106,25 @@ public class Revolver : MonoBehaviour
 
     public void Shoot()
     {
-        
         bulletCount--;
         CameraShake.Shake(0.4f, 0.015f);
         Instantiate(shootVFX, shootPos.position, shootPos.rotation);
-        ClickSound();
-        audioSource.PlayOneShot(shootClip);
-        if (hit.collider != null && hit.transform.tag == "Metal")
-        {
-            //Wall/vent has been hit
-            Instantiate(metalVFX, hit.point, Quaternion.LookRotation(hit.normal));
+        audioSource.PlayOneShot(clickClip);
+        audioSource.PlayOneShot(shootClip);       
+        if (hit.transform != null)
+        {          
+            if (hit.transform.tag == "Metal")
+            {
+                //Wall/vent has been hit
+                Instantiate(metalVFX, hit.point, Quaternion.LookRotation(hit.normal));
+            }
+
+            VentMonster hitMonster = hit.transform.GetComponent<VentMonster>();
+            if (hitMonster != null)
+            {
+                //Vent monster has been hit
+                hitMonster.OnMonsterHit();
+            }            
         }
     }
 
@@ -132,5 +152,6 @@ public class Revolver : MonoBehaviour
         string animToPlay = pickedUp ? idleAnim : stationaryAnim;
         isPickedUp = pickedUp;
         animator.Play(animToPlay);
+        moveCoroutine = null;
     }
 }

@@ -5,8 +5,6 @@ public class Player : MonoBehaviour
     [Header("Functional Parameters")]
     public bool canLookAround = true;
     public bool canInteract = true;
-    [Header("General Parameters")]
-
 
     [Header("Camera Parameters")]
     public Camera cam;
@@ -20,7 +18,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float interactionDistance = 1.5f;
     public LayerMask interactableLayerMask;
 
-    void Awake()
+    private void Awake()
     {
         cam = GetComponentInChildren<Camera>();
         camParent = cam.transform.parent;

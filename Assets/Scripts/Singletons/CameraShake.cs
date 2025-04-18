@@ -5,14 +5,14 @@ using DG.Tweening;
 
 public class CameraShake : MonoBehaviour
 {
-    public static CameraShake Instance;
+    public static CameraShake instance;
 
-    private void Awake() => Instance = this;
+    private void Awake() => instance = this;
 
     private void OnShake(float duration, float strength)
     {
         transform.DOShakePosition(duration, strength);
     }
 
-    public static void Shake(float duration, float strength) => Instance.OnShake(duration, strength);
+    public static void Shake(float duration, float strength) => instance.OnShake(duration, strength);
 }
