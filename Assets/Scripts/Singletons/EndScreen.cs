@@ -8,7 +8,7 @@ public class EndScreen : MonoBehaviour
     [SerializeField] private GameObject endScreen;
     [SerializeField] private TextMeshProUGUI endScreenText;
 
-    private const string winText = "You won!";
+    private const string winText = "You beat the Wraith!";
     private const string lossText = "You lost.";
 
     private void Awake() => Instance = this;
@@ -16,14 +16,12 @@ public class EndScreen : MonoBehaviour
     private IEnumerator OnEndGame(bool hasWon, float fadeDuration, float fadeDelay)
     {
         Fader.Fade(true, fadeDuration, fadeDelay);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(fadeDuration + fadeDelay);
         endScreenText.text = hasWon ? winText : lossText;
         endScreen.SetActive(true);
 
-        //Unlock the cursor and gradually reduce the volume of the audio listener
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-        yield return new WaitForSeconds(1);
+        //Gradually reduce the volume of the audio listener
+        yield return new WaitForSeconds(3);
         while (AudioListener.volume > 0)
         {
             AudioListener.volume -= 0.01f;
@@ -31,6 +29,6 @@ public class EndScreen : MonoBehaviour
         }
     }
 
-    public static void EndGame(bool hasWon, float fadeDuration = 0.5f, float fadeDelay = 0) =>
+    public static void EndGame(bool hasWon, float fadeDuration = 1f, float fadeDelay = 0) =>
         Instance.StartCoroutine(Instance.OnEndGame(hasWon, fadeDuration, fadeDelay));
 }

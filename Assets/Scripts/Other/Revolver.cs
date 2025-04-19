@@ -33,7 +33,7 @@ public class Revolver : MonoBehaviour
     private const string shootAnim = "Shoot";
     private const string emptyAnim = "NoAmmo";
 
-    private bool isPickedUp = false;
+    public bool isPickedUp = false;
 
     private void Awake()
     {

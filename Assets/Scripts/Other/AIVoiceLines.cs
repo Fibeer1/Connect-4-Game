@@ -14,7 +14,8 @@ public class AIVoiceLines : MonoBehaviour
     public static string roundWonPlayer = "You win.";
     public static string roundWonAI = "I win.";
     public static string difficultySwitch = "I won't go so easy on you now.";
-    public static string gameWonPlayer = "You win the game...";
+    public static string gameWonPlayer1 = "You win the game...";
+    public static string gameWonPlayer2 = "...or do you?";
     public static string gameWonAI = "You lost.";
     public static string gameTie = "Tie. Nobody wins. Or maybe we both win?";
     public static string blockPlayer = "heh...";
@@ -23,7 +24,7 @@ public class AIVoiceLines : MonoBehaviour
 
     private RoundManager roundManager;
 
-    [SerializeField] private AudioSource audioSource;
+    private AudioSource audioSource;
     [SerializeField] private AudioClip speechClip;
     private float speechFrequency = 0.1f;
 
@@ -33,6 +34,7 @@ public class AIVoiceLines : MonoBehaviour
     {
         roundManager = FindFirstObjectByType<RoundManager>();
         instance = this;
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -45,6 +47,7 @@ public class AIVoiceLines : MonoBehaviour
         if (roundManager.hasGameStarted && introSequence != null)
         {
             StopCoroutine(introSequence);
+            introSequence = null;
         }
     }
 
@@ -53,6 +56,7 @@ public class AIVoiceLines : MonoBehaviour
         string[] introLines = new string[] { intro1, intro2, intro3, intro4, intro5, intro6 };
         yield return new WaitForSeconds(0.75f);
 
+        //Intro dialogue, can be skipped if the player puts a token on the grid
         for (int i = 0; i < introLines.Length; i++)
         {
             StartCoroutine(OnLineSaid(introLines[i], 4f));

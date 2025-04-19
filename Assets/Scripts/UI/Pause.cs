@@ -21,6 +21,8 @@ public class Pause : MonoBehaviour
         {
             player = FindAnyObjectByType<Player>();
         }
+        //Usually bad practice, but since I haven't implemented volume settings it's fine
+        AudioListener.volume = 1;
         pauseMenu.SetActive(false);
         tutorialScreen.SetActive(false);
         interactionControls.gameObject.SetActive(false);
@@ -58,6 +60,7 @@ public class Pause : MonoBehaviour
         pauseMenu.SetActive(false);
         Time.timeScale = 1f;
         AudioListener.pause = false;
+        AudioListener.volume = 1;
         paused = false;
     }
 
@@ -67,6 +70,7 @@ public class Pause : MonoBehaviour
         pauseMenu.SetActive(true);
         Time.timeScale = 0f;
         AudioListener.pause = true;
+        AudioListener.volume = 1;
         paused = true;
     }    
 
@@ -75,6 +79,7 @@ public class Pause : MonoBehaviour
         pauseMenu.SetActive(false);
         Time.timeScale = 1f;
         AudioListener.pause = false;
+        AudioListener.volume = 1;
         paused = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -83,6 +88,7 @@ public class Pause : MonoBehaviour
     {
         Time.timeScale = 1f;
         AudioListener.pause = false;
+        AudioListener.volume = 1;
         SceneManager.LoadScene(0);
     }
 
@@ -90,6 +96,7 @@ public class Pause : MonoBehaviour
     {
         Time.timeScale = 1f;
         AudioListener.pause = false;
+        AudioListener.volume = 1;
         Application.Quit();
     }
 }

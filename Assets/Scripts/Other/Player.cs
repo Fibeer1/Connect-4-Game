@@ -18,8 +18,16 @@ public class Player : MonoBehaviour
     [SerializeField] private float interactionDistance = 1.5f;
     public LayerMask interactableLayerMask;
 
+    [Header("Other Parameters")]
+    private Pause pause;
+    private Revolver revolver;
+    private Rulebook book;
+
     private void Awake()
     {
+        pause = FindFirstObjectByType<Pause>();
+        revolver = FindFirstObjectByType<Revolver>();
+        book = FindFirstObjectByType<Rulebook>();
         cam = GetComponentInChildren<Camera>();
         camParent = cam.transform.parent;
         initialParentPosition = camParent.localPosition;
@@ -78,5 +86,21 @@ public class Player : MonoBehaviour
             currentInteractable = null;
         }
         
+    }
+
+    public void DisablePlayer()
+    {
+        //Used for animation sequences
+        //Prevents the player from acting and pausing the game
+        pause.enabled = false;
+        enabled = false;
+        if (revolver.isPickedUp)
+        {
+            revolver.PutDown();
+        }
+        if (book.isPickedUp)
+        {
+            book.PutBookBack();
+        }       
     }
 }

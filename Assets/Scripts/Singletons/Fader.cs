@@ -33,7 +33,7 @@ public class Fader : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
             blackScreen.color = Color.Lerp(startColor, endColor, elapsedTime / fadeDuration);
-            yield return new WaitForSeconds(Time.deltaTime);
+            yield return null;
         }
         if (!fadeIn)
         {

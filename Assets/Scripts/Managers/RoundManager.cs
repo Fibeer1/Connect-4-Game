@@ -79,6 +79,12 @@ public class RoundManager : MonoBehaviour
         
     }
 
+    public void UpdateScores(int playerIndex)
+    {
+        playerScores[playerIndex].text += "|";
+        winCounterAS.Play();
+    }
+
     public void CompleteRound(PlayerType winner)
     {
         int playerIndex = winner == PlayerType.Player ? 1 : winner == PlayerType.AI ? 0 : -1;
@@ -91,9 +97,8 @@ public class RoundManager : MonoBehaviour
         bool hasPlayerWon = playerIndex == 1;
         string playerName = playerIndex == 1 ? "Player" : "AI";
         string roundWinLine = playerIndex == 1 ? AIVoiceLines.roundWonPlayer : AIVoiceLines.roundWonAI;
-        string gameWinLine = playerIndex == 1 ? AIVoiceLines.gameWonPlayer : AIVoiceLines.gameWonAI;
-        playerScores[playerIndex].text += "|";
-        winCounterAS.Play();
+        string gameWinLine = playerIndex == 1 ? AIVoiceLines.gameWonPlayer1 : AIVoiceLines.gameWonAI;
+        
         //Make sure the loser acts first next round
         firstPlayerToAct = winner == PlayerType.Player ? PlayerType.AI : PlayerType.Player;      
         
@@ -102,17 +107,20 @@ public class RoundManager : MonoBehaviour
         {
             isGameOver = true;
             AIVoiceLines.SayLine(gameWinLine, 3);
-            EndScreen.EndGame(hasPlayerWon);
-            //TODO: Start win/lose sequence
-            //Will probably be an animation/coroutine with the player script being disabled, the opponent performing an animation, etc.
+
+            if (playerIndex == 1)
+            {
+                AnimationSequencer.PlayerWinSequence();
+            }
+            else
+            {
+                AnimationSequencer.PlayerDeathSequence();
+            }
             return;
         }
 
-        if (currentRound != 2)
-        {
-            //Say the line only when NOT switching difficulty
-            AIVoiceLines.SayLine(roundWinLine, 3);
-        }
-        BeginNewRound();
+        AnimationSequencer.RoundChangeSequence(playerIndex);
+
+        AIVoiceLines.SayLine(roundWinLine, 3);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class PlayerCamRotator : MonoBehaviour
         Center,
         Right
     }
+
+    public event Action<Rotation> OnPlayerTurn;
 
     [SerializeField] private Quaternion[] staticRotations;
     //X values are for the camera, Y values are for the player
@@ -41,7 +44,7 @@ public class PlayerCamRotator : MonoBehaviour
         // 0 - Left
         // 1 - Right
 
-        if (!player.canInteract || 
+        if (!player.enabled || !player.canInteract || 
             (directionIndex == 0 && currentRotation == Rotation.Left) ||
             (directionIndex == 1 && currentRotation == Rotation.Right) ||
             currentRotationSequence != null)
@@ -53,7 +56,9 @@ public class PlayerCamRotator : MonoBehaviour
             (currentRotation == Rotation.Right ? Rotation.Center : Rotation.Left) : //Left
             (currentRotation == Rotation.Left ? Rotation.Center : Rotation.Right); //Right
 
-        int clipRNG = Random.Range(0, shuffleClips.Length);
+        OnPlayerTurn.Invoke(targetRotation);
+
+        int clipRNG = UnityEngine.Random.Range(0, shuffleClips.Length);
         audioSource.PlayOneShot(shuffleClips[clipRNG]);
         currentRotationSequence = StartCoroutine(ChangeRotation(targetRotation));
 
@@ -62,6 +67,15 @@ public class PlayerCamRotator : MonoBehaviour
         {
             revolver.PutDown();
         }
+    }
+
+    public void ForceReturnToCenterRotation()
+    {
+        if (currentRotationSequence != null)
+        {
+            StopCoroutine(currentRotationSequence);
+        }        
+        currentRotationSequence = StartCoroutine(ChangeRotation(Rotation.Center));
     }
 
     private IEnumerator ChangeRotation(Rotation targetRotation, float duration = 0.75f)

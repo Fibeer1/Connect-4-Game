@@ -25,7 +25,7 @@ public class Rulebook : Interactable
 
     [SerializeField] private AudioClip putDownClip;
 
-    private bool pickedUp = false;
+    public bool isPickedUp = false;
 
     //Animations only change the rotation of the bones in the armature of the book
     //Positions are changed in code
@@ -47,19 +47,14 @@ public class Rulebook : Interactable
 
     private void Update()
     {
-        if (!pickedUp)
+        if (!isPickedUp)
         {
             return;
         }
         if (Input.GetKeyDown(KeyCode.Mouse1) && openCloseMovement == null)
         {
             //RMB to close the book
-            animator.Play(closeAnim, 0, 0);
-            player.canInteract = true;
-            audioSource.PlayOneShot(putDownClip);
-            openCloseMovement = StartCoroutine(MoveBook(stationaryPosition, stationaryRotation, false));
-            //Make sure the camera can only rotate from one script at a time
-            playerRotator.currentRotationSequence = openCloseMovement;
+            PutBookBack();
         }
     }
 
@@ -73,6 +68,16 @@ public class Rulebook : Interactable
             openCloseMovement = StartCoroutine(MoveBook(heldPosition, heldRotation, true));
             playerRotator.currentRotationSequence = openCloseMovement;
         }
+    }
+
+    public void PutBookBack()
+    {
+        animator.Play(closeAnim, 0, 0);
+        player.canInteract = true;
+        audioSource.PlayOneShot(putDownClip);
+        openCloseMovement = StartCoroutine(MoveBook(stationaryPosition, stationaryRotation, false));
+        //Make sure the camera can only rotate from one script at a time
+        playerRotator.currentRotationSequence = openCloseMovement;
     }
 
     private IEnumerator MoveBook(Vector3 targetPosition, Quaternion targetRotation, bool shouldPickUp = false, float duration = 1.5f)
@@ -119,6 +124,6 @@ public class Rulebook : Interactable
                 //if the player is holding the book
             Pause.ToggleInteractionControls(true, "RMB - Close book");
         }
-        pickedUp = shouldPickUp;       
+        isPickedUp = shouldPickUp;       
     }
 }

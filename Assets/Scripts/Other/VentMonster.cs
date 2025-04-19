@@ -36,14 +36,18 @@ public class VentMonster : MonoBehaviour
     //spawnTimer is used when the monster is waiting to spawn
     //waitTimer is used when the monster prepares to attack the player
 
-    [SerializeField] private float moveDuration = 2f; 
+    [SerializeField] private float moveDuration = 2f;
     //The time it takes for the monster to reach the player
     private float footstepFrequency = 0.25f;
+
+    [SerializeField] private float musicStingerThreshold = 0.75f;
+    //The time at which the music stinger plays
 
     [SerializeField] private int hitsNeededToRetreat = 2; 
     //The number of bullets it takes for the monster to start retreating
 
     private AudioSource audioSource;
+    [SerializeField] private AudioSource musicAS;
     [SerializeField] private AudioClip ventFootstepClip;
     [SerializeField] private AudioClip shriekClip;
     [SerializeField] private AudioClip growlClip;
@@ -66,6 +70,10 @@ public class VentMonster : MonoBehaviour
         if (!roundManager.hasGameStarted || roundManager.isGameOver)
         {
             //Do not act if the game is not in progress
+            if (moveCoroutine != null)
+            {
+                StopCoroutine(moveCoroutine);
+            }
             return;
         }
         HandleSpawnTimer();
@@ -138,6 +146,11 @@ public class VentMonster : MonoBehaviour
             transform.position = Vector3.Lerp(fromPos, toPos, elapsedTime / duration);
             elapsedTime += Time.deltaTime;
 
+            if (currentAction == Action.Attack && elapsedTime > musicStingerThreshold && !musicAS.isPlaying)
+            {
+                musicAS.Play();
+            }
+
             footstepDuration -= Time.deltaTime;
             if (footstepDuration < 0)
             {
@@ -161,8 +174,7 @@ public class VentMonster : MonoBehaviour
 
     private void OnMonsterAttack()
     {
-        Debug.Log("Kill player");
-        //TODO: Activate the jumpscare sequence of the opponent
+        AnimationSequencer.PlayerDeathSequence();
         gameObject.SetActive(false);
     }
 

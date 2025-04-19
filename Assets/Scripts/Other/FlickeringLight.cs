@@ -19,10 +19,10 @@ public class FlickeringLight : MonoBehaviour
         {
             Renderer renderer = originObject.GetComponent<Renderer>();
 
-            // Loop through the materials applied to the object
+            //Loop through the materials applied to the object
             foreach (Material material in renderer.materials)
             {
-                // Check if the material is using the Shader Graph shader
+                //Check if the material is using the Shader Graph shader
                 if (material.shader.name == shaderGraphShaderName)
                 {
                     Color materialColor = material.GetColor(colorReference);
@@ -41,7 +41,8 @@ public class FlickeringLight : MonoBehaviour
         {
             return;
         }
-        float noise = Mathf.PerlinNoise(Time.time * flickerSpeed, 0f); // smoother randomness
+        //Smooth randomness
+        float noise = Mathf.PerlinNoise(Time.time * flickerSpeed, 0f);
         float flicker = Mathf.Lerp(intensityMin, intensityMax, noise);
         lightSource.intensity = flicker;
     }

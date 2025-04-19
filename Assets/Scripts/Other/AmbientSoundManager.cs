@@ -30,6 +30,7 @@ public class AmbientSoundManager : MonoBehaviour
 
     private void PlaySound()
     {
+        //Get a random source and clip and play them
         int sourceRNG = Random.Range(0, ambientSources.Length);
         int soundRNG = Random.Range(0, ambientSounds.Length);
         ambientSources[sourceRNG].PlayOneShot(ambientSounds[soundRNG]);
