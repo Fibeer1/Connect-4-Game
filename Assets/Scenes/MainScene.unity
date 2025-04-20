@@ -581,8 +581,8 @@ MonoBehaviour:
     Five Nights at Freddy's and Buckshot Roulette, my ideas came mostly from them.
     Of course, I always like to interpret ideas and change them in my own original
     way, which is what I believe I achieved with the mechanics for this game. Since
-    I didn't try to come up with some crazy mechanics, this was the most fun I have
-    had with a project.
+    I didn't try to come up with some crazy mechanics and just kept it simple, this
+    was the most fun I have had with a project.
 --- !u!1 &131640138
 GameObject:
   m_ObjectHideFlags: 0
@@ -7020,9 +7020,9 @@ MonoBehaviour:
   messages:
   - I always try to master new things in programming which help me in different ways
     to implement all kinds of game mechanics. The most recent additions to my coding
-    repertoire are enums and coroutines, and I decided to try to use them as much
-    as possible (only in cases where they are a valid way to achieve my goal, of
-    course).
+    repertoire are enums, events and coroutines, and I decided to try to use them
+    as much as possible in order to get used to using them (only in cases where they
+    are a valid way to achieve my goal, of course).
 --- !u!1 &504151275
 GameObject:
   m_ObjectHideFlags: 0
@@ -7884,6 +7884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64df9874466c68b42800678b87ed716d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficulty: 0
   minWaitTime: 1
   maxWaitTime: 3
 --- !u!4 &610030437
