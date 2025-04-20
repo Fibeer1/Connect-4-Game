@@ -556,7 +556,7 @@ Transform:
   m_GameObject: {fileID: 130692204}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.16127717, y: -1.5065061, z: -0.29641613}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -575,14 +575,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   messages:
-  - I usually try my hardest to come up with some incredibly complicated mechanics
-    for my games (*cough* PASSAGE), but this time I just wrote down and implemented
-    whatever came to mind. Since I have recently played a lot of games similar to
-    Five Nights at Freddy's and Buckshot Roulette, my ideas came mostly from them.
-    Of course, I always like to interpret ideas and change them in my own original
-    way, which is what I believe I achieved with the mechanics for this game. Since
-    I didn't try to come up with some crazy mechanics and just kept it simple, this
-    was the most fun I have had with a project.
+  - I have tried hard to come up with very complicated mechanics for my previous
+    games (*cough* PASSAGE), but this time I challenged myself to keep it simple.
+    After playing titles like Five Nights at Freddy's and Buckshot Roulette, I was
+    inspired to explore similar mechanics while putting my own creative spin on them.
+    This project allowed me to interpret those ideas in an original way. It also
+    ended up being one of the most rewarding and fun development experiences I have
+    had so far.
 --- !u!1 &131640138
 GameObject:
   m_ObjectHideFlags: 0
@@ -6101,10 +6100,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   messages:
-  - When it comes to sounds, I usually make them myself with objects in my house,
-    by using my voice (or making noises with my mouth), or just get them off the
-    internet as a last resort. I use Audacity to edit the sounds as I see fit, and
-    am quite happy with how the audio atmosphere has turned out.
+  - When it comes to sounds, I usually do my own foley recordings, or just get them
+    off the internet as a last resort. I use Audacity to edit the sounds depending
+    on what would sound best with the atmosphere of the game.
 --- !u!4 &258257905
 Transform:
   m_ObjectHideFlags: 0
@@ -6114,7 +6112,7 @@ Transform:
   m_GameObject: {fileID: 258257903}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.16127717, y: -1.5065061, z: -0.29641613}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6853,8 +6851,8 @@ MonoBehaviour:
   messages:
   - All models you see in the game are made by me using Blender. Most of them are
     remodelled versions of models I had made a long time ago, for one of my previous
-    games, PASSAGE. I am a fan of the low-poly artstyle and my objective was to keep
-    the topologies of the objects as simple as possible.
+    games, PASSAGE. As a fan of the low-poly artstyle, my objective was to keep the
+    topologies of the objects as simple and optimized as possible.
   - As for the textures, some of them I made in Blender with texture paint, some
     I made in Aseprite or Krita, and some I got off the internet. The texture for
     the Wraith, for example, (the skeleton you play Connect 4 with) was drawn manually,
@@ -6868,7 +6866,7 @@ Transform:
   m_GameObject: {fileID: 395810749}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.16127717, y: -1.5065061, z: -0.29641613}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6999,7 +6997,7 @@ Transform:
   m_GameObject: {fileID: 458794176}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.16127717, y: -1.5065061, z: -0.29641613}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7020,8 +7018,8 @@ MonoBehaviour:
   messages:
   - I always try to master new things in programming which help me in different ways
     to implement all kinds of game mechanics. The most recent additions to my coding
-    repertoire are enums, events and coroutines, and I decided to try to use them
-    as much as possible in order to get used to using them (only in cases where they
+    repertoire are enums, events and coroutines. I decided to use them as much as
+    possible in order to become better at applying them (only in cases where they
     are a valid way to achieve my goal, of course).
 --- !u!1 &504151275
 GameObject:
@@ -8067,7 +8065,7 @@ Transform:
   m_GameObject: {fileID: 628805564}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.16127717, y: 1.5065061, z: 0.29641613}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12562,10 +12560,9 @@ MonoBehaviour:
   messages:
   - I started off with a rough idea in my head and just started working on the game.
     I wrote my ideas and tasks down in a text document and made a to-do list before
-    each day. As the project went on, I came up with new and more interesting ideas,
-    such as the vent monster (I came up with this while modelling the room, and added
-    vents to the sides of the player). Usually, in my projects, I don't have a day-to-day
-    plan and just go with the flow.
+    each day. As the project went on, I came up with new ideas, such as the vent
+    monster (I came up with this while modelling the room, and added vents to the
+    sides of the player).
 --- !u!4 &1676284004
 Transform:
   m_ObjectHideFlags: 0
@@ -12575,7 +12572,7 @@ Transform:
   m_GameObject: {fileID: 1676284002}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.16127717, y: -1.5065061, z: -0.29641613}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
