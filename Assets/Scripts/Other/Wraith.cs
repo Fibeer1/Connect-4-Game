@@ -83,8 +83,18 @@ public class Wraith : MonoBehaviour
         if (reachTimer <= 0)
         {
             shouldAct = false;
-            AnimationSequencer.PlayerDeathSequence();
+            AnimationSequencer.PlayerReachDeathSequence();
         }
+    }
+
+    public void SetUpForDefaultJumpscare()
+    {
+        if (currentAction == Action.Reach)
+        {
+            animator.Play(reachBackAnim, 0, 0);
+        }
+        currentAction = Action.Dead;
+        shouldAct = false;
     }
 
     private void OnPlayerTurn(PlayerCamRotator.Rotation rotation)

@@ -28,6 +28,8 @@ public class Revolver : MonoBehaviour
     public int bulletCount = 6;
     public int defaultBulletCount = 6;
 
+    private bool canShoot = true;
+
     private const string stationaryAnim = "Stationary";
     private const string idleAnim = "Held";
     private const string shootAnim = "Shoot";
@@ -70,10 +72,15 @@ public class Revolver : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(targetDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * heldRotationSpeed);
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0) && canShoot)
         {
-            //Using crossfade here so that the animation can be played multiple times
             string targetAnim = bulletCount > 0 ? shootAnim : emptyAnim;
+            if (bulletCount > 0)
+            {
+                //IF there's still ammo, delay the next shot so that if spammed,
+                //the shoot event doesn't get cancelled out
+                canShoot = false;
+            }
             animator.Play(targetAnim, 0, 0);
         }
     }
@@ -106,6 +113,7 @@ public class Revolver : MonoBehaviour
 
     public void Shoot()
     {
+        canShoot = true;
         bulletCount--;
         CameraShake.Shake(0.4f, 0.015f);
         Instantiate(shootVFX, shootPos.position, shootPos.rotation);

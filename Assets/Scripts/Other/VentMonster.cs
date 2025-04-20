@@ -172,10 +172,19 @@ public class VentMonster : MonoBehaviour
         }
     }
 
+    public void Deactivate()
+    {
+        if (moveCoroutine != null)
+        {
+            StopCoroutine(moveCoroutine);
+        }
+        gameObject.SetActive(false);
+    }
+
     private void OnMonsterAttack()
     {
-        AnimationSequencer.PlayerDeathSequence();
-        gameObject.SetActive(false);
+        AnimationSequencer.PlayerDeathSequence(sideIndex);
+        Deactivate();
     }
 
     public void PrepareToSpawn()

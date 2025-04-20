@@ -6942,6 +6942,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   columnIndex: 6
+--- !u!1 &431733509
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 431733510}
+  m_Layer: 0
+  m_Name: WraithRightJumpscarePosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &431733510
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431733509}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.593742, z: 0, w: 0.8046555}
+  m_LocalPosition: {x: 0.897842, y: 0, z: -1.49157}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2017796047}
+  m_LocalEulerAnglesHint: {x: 0, y: 72.846, z: 0}
 --- !u!1 &458794176
 GameObject:
   m_ObjectHideFlags: 0
@@ -8497,7 +8528,11 @@ MonoBehaviour:
     first
 
 
-    - First player to win 3 rounds wins the game.'
+    - First player to win 3 rounds wins the game.
+
+
+    - The game starts
+    when the player who goes first puts a token in the grid.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c99923c473c1c6f48a90d7b80e8a3edd, type: 2}
   m_sharedMaterial: {fileID: -3189527196618021534, guid: c99923c473c1c6f48a90d7b80e8a3edd, type: 2}
@@ -11224,7 +11259,7 @@ MonoBehaviour:
   spawnTimerMax: 45
   waitTimerMin: 5
   waitTimerMax: 10
-  moveDuration: 2
+  moveDuration: 3
   musicStingerThreshold: 1
   hitsNeededToRetreat: 2
   musicAS: {fileID: 287542371}
@@ -11517,7 +11552,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1444751783}
   m_Layer: 0
-  m_Name: WraithJumpscarePosition
+  m_Name: WraithLeftJumpscarePosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12964,15 +12999,17 @@ MonoBehaviour:
     LISTEN FOR GROWLING NOISE
 
     WHEN
-    YOU HEAR IT CRAWLING TOWARDS YOU, SHOOT AT IT
+    YOU HEAR IT CRAWLING TOWARDS YOU, SHOOT AT IT TWICE
 
-    YOU HAVE 6 BULLETS, DO NOT
-    WASTE THEM
+    YOU HAVE 6 BULLETS,
+    DO NOT WASTE THEM
 
     BULLETS GET REFILLED EACH ROUND
 
-    DO NOT STARE AT THE VENTS
-    FOR TOO LONG'
+    DO NOT STARE AT THE
+    VENTS FOR TOO LONG
+
+    YOU ARE ONLY IN DANGER WHEN THE GAME IS IN PROGRESS'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6348a8eca8399ef4791cc99959b6139a, type: 2}
   m_sharedMaterial: {fileID: -792985888578145540, guid: 6348a8eca8399ef4791cc99959b6139a, type: 2}
@@ -13675,6 +13712,7 @@ Transform:
   - {fileID: 1193954965}
   - {fileID: 550958532}
   - {fileID: 1444751783}
+  - {fileID: 431733510}
   m_Father: {fileID: 1998947740}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2017796048
@@ -13696,7 +13734,8 @@ MonoBehaviour:
   wraithFaceLight: {fileID: 7425386}
   ambience1: {fileID: 1902625872}
   ambience2: {fileID: 1176762054}
-  wraithJumpscarePosition: {fileID: 1444751783}
+  wraithLeftJumpscarePosition: {fileID: 1444751783}
+  wraithRightJumpscarePosition: {fileID: 431733510}
   jumpscareStartClip: {fileID: 8300000, guid: 683b0214b1155104089240affd407937, type: 3}
   jumpscareEndClip: {fileID: 8300000, guid: 1218d467472356c4ab79179ba62ac068, type: 3}
   neckSnapClip: {fileID: 8300000, guid: aa9438f9660810e4b8392af6175504bd, type: 3}

@@ -19,7 +19,7 @@ public class AIOpponent : MonoBehaviour
 
     private RoundManager roundManager;
     private TokenGrid tokenGrid;
-    private Difficulty difficulty;
+    [SerializeField] private Difficulty difficulty;
 
     private bool hasSaidDifficultyLine = false;
 

@@ -18,7 +18,8 @@ public class AnimationSequencer : MonoBehaviour
     [SerializeField] private AudioSource ambience2;
 
     [Header("Player Death Variables")]
-    [SerializeField] private Transform wraithJumpscarePosition;
+    [SerializeField] private Transform wraithLeftJumpscarePosition;
+    [SerializeField] private Transform wraithRightJumpscarePosition;
     [SerializeField] private AudioClip jumpscareStartClip;
     [SerializeField] private AudioClip jumpscareEndClip;
     [SerializeField] private AudioClip neckSnapClip;
@@ -27,15 +28,19 @@ public class AnimationSequencer : MonoBehaviour
     private Player player;
     private PlayerCamRotator playerCamScript;
     private Wraith wraith;
+    private VentMonster ventMonster;
     private AmbientSoundManager ambientSoundManager;
     [SerializeField] private Animator wraithAnimator;
     [SerializeField] private Animator playerCamAnimator;
     private Coroutine currentSequence;
+    private Coroutine currentEndSequence;
 
     private const string wraithLookUpAnim = "Wraith|DeadLookUp";
     private const string wraithJumpscareAnim = "Wraith|Jumpscare";
     private const string wraithCamJumpscareAnim = "PlayerCam|CamJumpscare";
-    
+    private const string wraithCamJumpscareRightAnim = "PlayerCam|CamJumpscareRight";
+    private const string wraithCamJumpscareReachAnim = "PlayerCam|CamJumpscareReach";
+    private const string wraithReachJumpscareAnim = "Wraith|JumpscareReach";
 
     private void Awake()
     {
@@ -45,6 +50,7 @@ public class AnimationSequencer : MonoBehaviour
         wraith = FindFirstObjectByType<Wraith>();
         ambientSoundManager = FindFirstObjectByType<AmbientSoundManager>();
         playerCamScript = FindFirstObjectByType<PlayerCamRotator>();
+        ventMonster = FindFirstObjectByType<VentMonster>();
         wraithFaceLight.SetActive(false);
     }
     
@@ -64,11 +70,8 @@ public class AnimationSequencer : MonoBehaviour
 
     private IEnumerator OnPlayerWin()
     {
-        wraith.shouldAct = false;
-        ambientSoundManager.shouldPlaySound = false;
-        LightHandler.ToggleLights(true);
-        player.DisablePlayer();
-        playerCamScript.ForceReturnToCenterRotation();
+        wraith.SetUpForDefaultJumpscare();
+        SetUpForEndSequence();        
         float ambientSoundsVolume = 1;
         float elapsedTime = 0;
         float ambiencefadeDuration = 3;
@@ -93,21 +96,41 @@ public class AnimationSequencer : MonoBehaviour
         EndScreen.EndGame(true);
     }
 
-    private IEnumerator OnPlayerDeath()
+    private IEnumerator OnPlayerDeath(int sideIndex)
     {
-        wraith.shouldAct = false;
-        ambientSoundManager.shouldPlaySound = false;
+        //The Wraith can appear either on the left or right, depending on the side index
+        wraith.SetUpForDefaultJumpscare();
+        SetUpForEndSequence();
         LightHandler.FlickerLights(5, false);
-        player.DisablePlayer();
-        playerCamScript.ForceReturnToCenterRotation();
         yield return new WaitForSeconds(2);
-        wraithAnimator.transform.position = wraithJumpscarePosition.position;
-        wraithAnimator.transform.rotation = wraithJumpscarePosition.rotation;
+        Vector3 wraithTargetPos = sideIndex == 0 ? wraithLeftJumpscarePosition.position : wraithRightJumpscarePosition.position;
+        Quaternion wraithTargetRot = sideIndex == 0 ? wraithLeftJumpscarePosition.rotation : wraithRightJumpscarePosition.rotation;
+        string camTargetAnim = sideIndex == 0 ? wraithCamJumpscareAnim : wraithCamJumpscareRightAnim;
+        wraithAnimator.transform.SetPositionAndRotation(wraithTargetPos, wraithTargetRot);
         wraithAnimator.Play(wraithJumpscareAnim, 0, 0);
         player.cam.transform.SetParent(playerCamAnimator.transform, true);
-        playerCamAnimator.Play(wraithCamJumpscareAnim, 0, 0);
+        playerCamAnimator.Play(camTargetAnim, 0, 0);
         yield return new WaitForSeconds(0.25f);
         LightHandler.FlickerLights(3, true);
+    }
+
+    private IEnumerator OnPlayerReachDeath()
+    {
+        SetUpForEndSequence();
+        yield return new WaitForSeconds(0.25f);
+        wraithAnimator.Play(wraithReachJumpscareAnim, 0, 0);
+        player.cam.transform.SetParent(playerCamAnimator.transform, true);
+        playerCamAnimator.Play(wraithCamJumpscareReachAnim, 0, 0);
+    }
+
+    private void SetUpForEndSequence()
+    {
+        LightHandler.ToggleLights(true);
+        ventMonster.Deactivate();
+        wraith.shouldAct = false;
+        ambientSoundManager.shouldPlaySound = false;
+        player.DisablePlayer();
+        playerCamScript.ForceReturnToCenterRotation();
     }
 
     public void JumpscareStartSound()
@@ -147,16 +170,41 @@ public class AnimationSequencer : MonoBehaviour
             //Make sure the win animation actually plays
             instance.StopCoroutine(instance.currentSequence);
         }
-        instance.currentSequence = instance.StartCoroutine(instance.OnPlayerWin());        
+        if (instance.currentEndSequence != null)
+        {
+            //Make sure end sequences do not get overwritten
+            return;
+        }
+        instance.currentEndSequence = instance.StartCoroutine(instance.OnPlayerWin());        
     }
 
-    public static void PlayerDeathSequence()
+    public static void PlayerDeathSequence(int sideIndex = 0)
     {
         if (instance.currentSequence != null)
         {
             //Make sure the death animation actually plays
             instance.StopCoroutine(instance.currentSequence);
         }
-        instance.currentSequence = instance.StartCoroutine(instance.OnPlayerDeath());
+        if (instance.currentEndSequence != null)
+        {
+            //Make sure end sequences do not get overwritten
+            return;
+        }
+        instance.currentEndSequence = instance.StartCoroutine(instance.OnPlayerDeath(sideIndex));
+    }
+
+    public static void PlayerReachDeathSequence()
+    {
+        if (instance.currentSequence != null)
+        {
+            //Make sure the death animation actually plays
+            instance.StopCoroutine(instance.currentSequence);
+        }
+        if (instance.currentEndSequence != null)
+        {
+            //Make sure end sequences do not get overwritten
+            return;
+        }
+        instance.currentEndSequence = instance.StartCoroutine(instance.OnPlayerReachDeath());
     }
 }
