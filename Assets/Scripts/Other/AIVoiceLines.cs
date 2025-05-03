@@ -5,20 +5,20 @@ using UnityEngine.Rendering;
 
 public class AIVoiceLines : MonoBehaviour
 {
-    private const string intro1 = "You're awake. We are going to play a game of Connect 4.";
-    private const string intro2 = "The rules are simple. We take turns placing tokens on the grid.";
-    private const string intro3 = "The first one who connects 4 tokens in any direction wins the round.";
-    private const string intro4 = "Whoever wins 3 rounds first wins the game.";
-    private const string intro5 = "Take a look at the rulebook if anything is unclear.";
-    private const string intro6 = "When you are ready, put a token in the grid to start the game.";
-    public static string roundWonPlayer = "You win.";
-    public static string roundWonAI = "I win.";
-    public static string difficultySwitch = "I won't go so easy on you now.";
-    public static string gameWonPlayer1 = "You win the game...";
-    public static string gameWonPlayer2 = "...or do you?";
-    public static string gameWonAI = "You lost.";
-    public static string gameTie = "Tie. Nobody wins. Or maybe we both win?";
-    public static string blockPlayer = "heh...";
+    private const string intro1 = "ai_intro1";
+    private const string intro2 = "ai_intro2";
+    private const string intro3 = "ai_intro3";
+    private const string intro4 = "ai_intro4";
+    private const string intro5 = "ai_intro5";
+    private const string intro6 = "ai_intro6";
+    public static string roundWonPlayer = "ai_round_won_player";
+    public static string roundWonAI = "ai_round_won_ai";
+    public static string difficultySwitch = "ai_difficulty_switch";
+    public static string gameWonPlayer1 = "ai_game_won_player1";
+    public static string gameWonPlayer2 = "ai_game_won_player2";
+    public static string gameWonAI = "ai_game_won_ai";
+    public static string gameTie = "ai_game_tie";
+    public static string blockPlayer = "ai_block";
 
     private Coroutine introSequence;
 
@@ -71,16 +71,17 @@ public class AIVoiceLines : MonoBehaviour
         if (line == "")
         {
             yield break;
-        }
-        int lineLength = line.Length / 2;
-        SubtitleHandler.ShowSubtitle(line, duration);
+        }      
+        string localizedLine = LocalizationManager.Instance.Get(line);
+        int lineLength = localizedLine.Length / 2;
+        SubtitleHandler.ShowSubtitle(localizedLine, duration);
 
         for (int i = 0; i < lineLength; i++)
         {
             audioSource.PlayOneShot(speechClip);
             float updatedFrequency = speechFrequency;
             //Slow down the arrival of the next speech clip depending on the current symbol
-            updatedFrequency *= Regex.IsMatch(line[i].ToString(), @"[.,!?;:'""()\[\]{}\-—]") ? 2 : line[i].ToString() == " " ? 1.5f : 1;
+            updatedFrequency *= Regex.IsMatch(localizedLine[i].ToString(), @"[.,!?;:'""()\[\]{}\-—]") ? 2 : localizedLine[i].ToString() == " " ? 1.5f : 1;
             yield return new WaitForSeconds(updatedFrequency);
         }
     }

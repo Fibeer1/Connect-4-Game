@@ -45,7 +45,7 @@ public class Pause : MonoBehaviour
 
     private void OnInteractionControls(bool shouldActivate, string controlText = "")
     {
-        interactionControls.text = controlText;
+        interactionControls.text = LocalizationManager.Instance.Get(controlText);
         interactionControls.gameObject.SetActive(shouldActivate);
     }
 

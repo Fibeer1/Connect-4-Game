@@ -1,0 +1,128 @@
+{
+  "items": [
+    {
+      "key": "ai_intro1",
+      "value": "You're awake. We are going to play a game of Connect 4."
+    },
+    {
+      "key": "ai_intro2",
+      "value": "The rules are simple. We take turns placing tokens on the grid."
+    },
+    {
+      "key": "ai_intro3",
+      "value": "The first one who connects 4 tokens in any direction wins the round."
+    },
+    {
+      "key": "ai_intro4",
+      "value": "Whoever wins 3 rounds first wins the game."
+    },
+    {
+      "key": "ai_intro5",
+      "value": "Take a look at the rulebook if anything is unclear."
+    },
+    {
+      "key": "ai_intro6",
+      "value": "When you are ready, put a token in the grid to start the game."
+    },
+    {
+      "key": "ai_round_won_player",
+      "value": "You win."
+    },
+    {
+      "key": "ai_round_won_ai",
+      "value": "I win."
+    },
+    {
+      "key": "ai_difficulty_switch",
+      "value": "I won't go so easy on you now."
+    },
+    {
+      "key": "ai_game_won_player1",
+      "value": "You win the game..."
+    },
+    {
+      "key": "ai_game_won_player2",
+      "value": "...or do you?"
+    },
+    {
+      "key": "ai_game_won_ai",
+      "value": "You lost."
+    },
+    {
+      "key": "ai_game_tie",
+      "value": "Tie. Nobody wins. Or maybe we both win?"
+    },
+    {
+      "key": "ai_block",
+      "value": "heh..."
+    },
+    {
+      "key": "win_text",
+      "value": "You beat the Wraith!"
+    },
+    {
+      "key": "lose_text",
+      "value": "You lost."
+    },
+    {
+      "key": "controls",
+      "value": "Controls:\nLMB - Interact\nRMB - Stop interaction\n\nHover over the edges of the screen with the mouse to turn left and right"
+    },
+    {
+      "key": "controls_close_book",
+      "value": "RMB - Close book"
+    },
+    {
+      "key": "start_game",
+      "value": "Start game"
+    },
+    {
+      "key": "resume",
+      "value": "Resume"
+    },
+    {
+      "key": "restart",
+      "value": "Restart"
+    },
+    {
+      "key": "main_menu",
+      "value": "Main menu"
+    },
+    {
+      "key": "quit",
+      "value": "Quit"
+    },
+    {
+      "key": "tutorial",
+      "value": "Tutorial"
+    },
+    {
+      "key": "rulebook",
+      "value": "Rulebook"
+    },
+    {
+      "key": "counter_wins",
+      "value": "WINS"
+    },
+    {
+      "key": "counter_player",
+      "value": "YOU"
+    },
+    {
+      "key": "counter_opponent",
+      "value": "OPPONENT"
+    },
+    {
+      "key": "back",
+      "value": "Back"
+    },
+    {
+      "key": "vent_rules",
+      "value": "VENTS TO YOUR LEFT AND RIGHT\nLISTEN FOR GROWLING NOISE\nWHEN YOU HEAR IT CRAWLING TOWARDS YOU, SHOOT AT IT TWICE\nYOU HAVE 6 BULLETS, DO NOT WASTE THEM\nBULLETS GET REFILLED EACH ROUND\nDO NOT STARE AT THE VENTS FOR TOO LONG\nYOU ARE ONLY IN DANGER WHEN THE GAME IS IN PROGRESS"
+    },
+    {
+      "key": "game_rules",
+      "value": "Connect 4 rules:\n\n- Put tokens on the grid\n\n- Tokens fall to the lowest available space in the column\n\n- First player to connect 4 in a row (horizontally, vertically, or diagonally) wins the round\n\n- If the grid fills up completely without anyone scoring 4 in a row, the round ends in a draw\n\n- When a round starts, the player who lost the previous round acts first\n\n- First player to win 3 rounds wins the game.\n\n- The game starts when the player who goes first puts a token in the grid."
+    }
+  ]
+}

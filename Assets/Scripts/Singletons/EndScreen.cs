@@ -8,8 +8,8 @@ public class EndScreen : MonoBehaviour
     [SerializeField] private GameObject endScreen;
     [SerializeField] private TextMeshProUGUI endScreenText;
 
-    private const string winText = "You beat the Wraith!";
-    private const string lossText = "You lost.";
+    private const string winText = "win_text";
+    private const string lossText = "lose_text";
 
     private void Awake() => Instance = this;
 
@@ -17,7 +17,8 @@ public class EndScreen : MonoBehaviour
     {
         Fader.Fade(true, fadeDuration, fadeDelay);
         yield return new WaitForSeconds(fadeDuration + fadeDelay);
-        endScreenText.text = hasWon ? winText : lossText;
+        string localizedText = LocalizationManager.Instance.Get(hasWon ? winText : lossText);
+        endScreenText.text = localizedText;
         endScreen.SetActive(true);
 
         //Gradually reduce the volume of the audio listener
